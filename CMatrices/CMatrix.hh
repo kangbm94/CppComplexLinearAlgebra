@@ -1,5 +1,4 @@
 #include "Complex.hh"
-#include "CVector.hh"
 #ifndef CMatrix_h
 #define CMatrix_h
 void ReduceDim(Complex* Min, Complex* Mout, int dim, int row, int col){
@@ -16,7 +15,7 @@ void ReduceDim(Complex* Min, Complex* Mout, int dim, int row, int col){
 				else{
 					Mout[cnt]=Min[dim*i+j];
 					cnt++;
-				
+
 				}
 			}
 		}
@@ -27,19 +26,66 @@ class CMat2D{
 		Complex M_[4];
 		int dim=2;
 	public:
-		CMat2D(){};
-		CMat2D(Complex* M){
-			for(int i=0;i<4;i++){
-				M_[i]=M[i];
+		CMat2D(){
+			for(int i=0;i<dim*dim;i++){
+				M_[i]=Complex(0,0);
 			}
 		};
+		CMat2D(int* M){
+			for(int i=0;i<dim*dim;i++){
+				M_[i]=Complex(M[i],0);
+			}
+		}
+		CMat2D(double* M){
+			for(int i=0;i<dim*dim;i++){
+				M_[i]=Complex(M[i],0);
+			}
+		}
+		CMat2D(Complex* M){
+			for(int i=0;i<dim*dim;i++){
+				M_[i]=M[i];
+			}
+		}
+		void Init(){
+			for(int i=0;i<dim*dim;i++){
+				M_[i]=0;
+			}
+		}
 		Complex GetElement(int i, int j){
 			if(dim*i+j<dim*dim){
 				return M_[dim*i+j];
 			}
 			else{
-				return Complex(-99999,-99999);
+				cout<<"Dimmesion Error"<<endl;
+				return Complex(0,0);
 			}
+		}
+		double  GetElementReal(int i, int j){
+			if(dim*i+j<dim*dim){
+				return M_[dim*i+j].Real();
+			}
+			else{
+				cout<<"Dimmesion Error"<<endl;
+				return -99999;
+			}
+		}
+		double GetElementImaginary(int i, int j){
+			if(dim*i+j<dim*dim){
+				return M_[dim*i+j].Imaginary();
+			}
+			else{
+				cout<<"Dimmesion Error"<<endl;
+				return -99999;
+			}
+		}
+		void SetElement(int i, int j, Complex Z){
+			M_[dim*i+j]=Z;
+		}
+		void SetElement(int i, int j, int a){
+			M_[dim*i+j]=Complex(a,0);
+		}
+		void SetElement(int i, int j, double a){
+			M_[dim*i+j]=Complex(a,0);
 		}
 		Complex Minor(int col,int row){
 			Complex M[2];
@@ -79,14 +125,25 @@ class CMat2D{
 		}
 		CMat2D operator*( CMat2D B){
 			Complex MOut[dim*dim];
-				for(int i=0;i<dim;i++){
-					for(int j=0;j<dim;j++){
-							MOut[dim*i+j]=0;
-						for(int k=0;k<dim;k++){
-								MOut[dim*i+j]+=GetElement(i,k)*(B.GetElement(k,j));
-						}
+			for(int i=0;i<dim;i++){
+				for(int j=0;j<dim;j++){
+					MOut[dim*i+j]=0;
+					for(int k=0;k<dim;k++){
+						MOut[dim*i+j]+=GetElement(i,k)*(B.GetElement(k,j));
 					}
 				}
+			}
+			CMat2D C(MOut);
+			return C;
+		}
+		CMat2D operator*( Complex B){
+			Complex MOut[dim*dim];
+			for(int i=0;i<dim;i++){
+				for(int j=0;j<dim;j++){
+					MOut[dim*i+j]=0;
+					MOut[dim*i+j]=GetElement(i,j)*B;
+				}
+			}
 			CMat2D C(MOut);
 			return C;
 		}
@@ -103,17 +160,72 @@ class CMat2D{
 			return CMat2D(M_);
 		}
 };
+CMat2D operator*( Complex B,CMat2D A){
+	int dim=2;
+		Complex MOut[dim*dim];
+	for(int i=0;i<dim;i++){
+		for(int j=0;j<dim;j++){
+			MOut[dim*i+j]=0;
+			MOut[dim*i+j]=A.GetElement(i,j)*B;
+		}
+	}
+	CMat2D C(MOut);
+	return C;
+}
+CMat2D CRow2D(Complex* Z){
+	int dim=2;
+	CMat2D Temp;
+	for(int i=0;i<dim;i++){
+		Temp.SetElement(i,0,Z[i]);
+	}
+	return Temp;
+}
+CMat2D CCol2D(Complex* Z){
+	int dim=2;
+	CMat2D Temp;
+	for(int i=0;i<dim;i++){
+		Temp.SetElement(0,i,Z[i]);
+	}
+	return Temp;
+}
+CMat2D CDiag2D(Complex* Z){
+	int dim=2;
+	CMat2D Temp;
+	for(int i=0;i<dim;i++){
+		Temp.SetElement(i,i,Z[i]);
+	}
+	return Temp;
+}
 class CMat3D{
 	private:
 		Complex M_[9];
-		 int dim=3;
+		int dim=3;
 	public:
-		CMat3D(){};
-		CMat3D(Complex* M){
-			for(int i=0;i<9;i++){
-				M_[i]=M[i];
+		CMat3D(){
+			for(int i=0;i<dim*dim;i++){
+				M_[i]=Complex(0,0);
 			}
 		};
+		CMat3D(int* M){
+			for(int i=0;i<dim*dim;i++){
+				M_[i]=Complex(M[i],0);
+			}
+		}
+		CMat3D(double* M){
+			for(int i=0;i<dim*dim;i++){
+				M_[i]=Complex(M[i],0);
+			}
+		}
+		CMat3D(Complex* M){
+			for(int i=0;i<dim*dim;i++){
+				M_[i]=M[i];
+			}
+		}
+		void Init(){
+			for(int i=0;i<dim*dim;i++){
+				M_[i]=0;
+			}
+		}
 		void List(){
 			for(int i=0;i<dim*dim;i++){
 				cout<<"( "<<M_[i].Real()<<" , "<<M_[i].Imaginary()<<" )"<<endl;
@@ -126,6 +238,33 @@ class CMat3D{
 			else{
 				return Complex(-99999,-99999);
 			}
+		}
+		double  GetElementReal(int i, int j){
+			if(dim*i+j<dim*dim){
+				return M_[dim*i+j].Real();
+			}
+			else{
+				cout<<"Dimmesion Error"<<endl;
+				return -99999;
+			}
+		}
+		double GetElementImaginary(int i, int j){
+			if(dim*i+j<dim*dim){
+				return M_[dim*i+j].Imaginary();
+			}
+			else{
+				cout<<"Dimmesion Error"<<endl;
+				return -99999;
+			}
+		}
+		void SetElement(int i, int j, Complex Z){
+			M_[dim*i+j]=Z;
+		}
+		void SetElement(int i, int j, int a){
+			M_[dim*i+j]=Complex(a,0);
+		}
+		void SetElement(int i, int j, double a){
+			M_[dim*i+j]=Complex(a,0);
 		}
 		CMat2D Minor(int col, int row){
 			Complex Mred[4];
@@ -185,27 +324,93 @@ class CMat3D{
 		}
 		CMat3D operator*( CMat3D B){
 			Complex MOut[dim*dim];
-				for(int i=0;i<dim;i++){
-					for(int j=0;j<dim;j++){
-							MOut[dim*i+j]=0;
-						for(int k=0;k<dim;k++){
-							MOut[dim*i+j]+=(GetElement(i,k))*(B.GetElement(k,j));
-						}
+			for(int i=0;i<dim;i++){
+				for(int j=0;j<dim;j++){
+					MOut[dim*i+j]=0;
+					for(int k=0;k<dim;k++){
+						MOut[dim*i+j]+=(GetElement(i,k))*(B.GetElement(k,j));
 					}
 				}
+			}
+			CMat3D C(MOut);
+			return C;
+		}
+		CMat3D operator*( Complex B){
+			Complex MOut[dim*dim];
+			for(int i=0;i<dim;i++){
+				for(int j=0;j<dim;j++){
+					MOut[dim*i+j]=0;
+					MOut[dim*i+j]=GetElement(i,j)*B;
+				}
+			}
 			CMat3D C(MOut);
 			return C;
 		}
 };
+CMat3D operator*( Complex B,CMat3D A){
+	int dim=3;
+		Complex MOut[dim*dim];
+	for(int i=0;i<dim;i++){
+		for(int j=0;j<dim;j++){
+			MOut[dim*i+j]=0;
+			MOut[dim*i+j]=A.GetElement(i,j)*B;
+		}
+	}
+	CMat3D C(MOut);
+	return C;
+}
+CMat3D CRow3D(Complex* Z){
+	int dim=3;
+	CMat3D Temp;
+	for(int i=0;i<dim;i++){
+		Temp.SetElement(i,0,Z[i]);
+	}
+	return Temp;
+}
+CMat3D CCol3D(Complex* Z){
+	int dim=3;
+	CMat3D Temp;
+	for(int i=0;i<dim;i++){
+		Temp.SetElement(0,i,Z[i]);
+	}
+	return Temp;
+}
+CMat3D CDiag3D(Complex* Z){
+	int dim=3;
+	CMat3D Temp;
+	for(int i=0;i<dim;i++){
+		Temp.SetElement(i,i,Z[i]);
+	}
+	return Temp;
+}
 class CMat4D{
 	private:
 		Complex M_[16];
-		 int dim=4;
+		int dim=4;
 	public:
-		CMat4D(){};
+		CMat4D(){
+			for(int i=0;i<dim*dim;i++){
+				M_[i]=Complex(0,0);
+			}
+		}
+		CMat4D(int* M){
+			for(int i=0;i<dim*dim;i++){
+				M_[i]=Complex(M[i],0);
+			}
+		}
+		CMat4D(double* M){
+			for(int i=0;i<dim*dim;i++){
+				M_[i]=Complex(M[i],0);
+			}
+		}
 		CMat4D(Complex* M){
-			for(int i=0;i<16;i++){
+			for(int i=0;i<dim*dim;i++){
 				M_[i]=M[i];
+			}
+		}
+		void Init(){
+			for(int i=0;i<dim*dim;i++){
+				M_[i]=0;
 			}
 		}
 		void List(){
@@ -221,10 +426,37 @@ class CMat4D{
 				return Complex(-99999,-99999);
 			}
 		}
+		double  GetElementReal(int i, int j){
+			if(dim*i+j<dim*dim){
+				return M_[dim*i+j].Real();
+			}
+			else{
+				cout<<"Dimmesion Error"<<endl;
+				return -99999;
+			}
+		}
+		double GetElementImaginary(int i, int j){
+			if(dim*i+j<dim*dim){
+				return M_[dim*i+j].Imaginary();
+			}
+			else{
+				cout<<"Dimmesion Error"<<endl;
+				return -99999;
+			}
+		}
+		void SetElement(int i, int j, Complex Z){
+			M_[dim*i+j]=Z;
+		}
+		void SetElement(int i, int j, int a){
+			M_[dim*i+j]=Complex(a,0);
+		}
+		void SetElement(int i, int j, double a){
+			M_[dim*i+j]=Complex(a,0);
+		}
 		void GetElements(Complex* M){
 			for(int i=0;i<16;i++){
 				M[i]=M_[i];
-		}
+			}
 		}
 		CMat4D operator+(CMat4D A){
 			for(int i=0;i<dim*dim;i++){
@@ -238,7 +470,7 @@ class CMat4D{
 			}
 			return CMat4D(M_);
 		}
-		
+
 		CMat3D Minor(int col, int row){
 			Complex Mred[9];
 			ReduceDim(M_,Mred,dim,col,row);
@@ -273,16 +505,63 @@ class CMat4D{
 		}
 		CMat4D operator*( CMat4D B){
 			Complex MOut[dim*dim];
-				for(int i=0;i<dim;i++){
-					for(int j=0;j<dim;j++){
-							MOut[dim*i+j]=0;
-						for(int k=0;k<dim;k++){
-							MOut[dim*i+j]+=(GetElement(i,k))*(B.GetElement(k,j));
-						}
+			for(int i=0;i<dim;i++){
+				for(int j=0;j<dim;j++){
+					MOut[dim*i+j]=0;
+					for(int k=0;k<dim;k++){
+						MOut[dim*i+j]+=(GetElement(i,k))*(B.GetElement(k,j));
 					}
 				}
+			}
+			CMat4D C(MOut);
+			return C;
+		}
+		CMat4D operator*( Complex B){
+			Complex MOut[dim*dim];
+			for(int i=0;i<dim;i++){
+				for(int j=0;j<dim;j++){
+					MOut[dim*i+j]=0;
+					MOut[dim*i+j]=GetElement(i,j)*B;
+				}
+			}
 			CMat4D C(MOut);
 			return C;
 		}
 };
+CMat4D operator*( Complex B,CMat4D A){
+	int dim=4;
+		Complex MOut[dim*dim];
+	for(int i=0;i<dim;i++){
+		for(int j=0;j<dim;j++){
+			MOut[dim*i+j]=0;
+			MOut[dim*i+j]=A.GetElement(i,j)*B;
+		}
+	}
+	CMat4D C(MOut);
+	return C;
+}
+CMat4D CRow4D(Complex* Z){
+	int dim=4;
+	CMat4D Temp;
+	for(int i=0;i<dim;i++){
+		Temp.SetElement(i,0,Z[i]);
+	}
+	return Temp;
+}
+CMat4D CCol4D(Complex* Z){
+	int dim=4;
+	CMat4D Temp;
+	for(int i=0;i<dim;i++){
+		Temp.SetElement(0,i,Z[i]);
+	}
+	return Temp;
+}
+CMat4D CDiag4D(Complex* Z){
+	int dim=4;
+	CMat4D Temp;
+	for(int i=0;i<dim;i++){
+		Temp.SetElement(i,i,Z[i]);
+	}
+	return Temp;
+}
 #endif
